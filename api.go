@@ -24,6 +24,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
+// typeHandler is a handler which returns type of incoming value
 func typeHandler(w http.ResponseWriter, r *http.Request) {
 	pl := new(TypeReq)
 
@@ -43,16 +44,12 @@ func typeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var dt string
+	dt := reflect.TypeOf(k).String()
 
-	switch k := k.(type) {
-	case float64:
-		dt = "int"
-		if hasDecimals(k) {
-			dt = "float64"
+	if kf, ok := k.(float64); ok {
+		if !hasDecimals(kf) {
+			dt = "int"
 		}
-	default:
-		dt = reflect.TypeOf(k).String()
 	}
 
 	resp := &TypeResp{
@@ -71,6 +68,8 @@ func typeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// hasDecimals shows the fact of existence of decimals in a given float64
+// If they are presented - true will be returned
 func hasDecimals(v float64) bool {
 	s := strconv.FormatFloat(v, 'f', -1, 64)
 	i := strings.IndexByte(s, '.')
