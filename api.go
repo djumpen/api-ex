@@ -26,16 +26,21 @@ func main() {
 
 // typeHandler is a handler which returns type of incoming value
 func typeHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", jsonapi.MediaType)
+
 	pl := new(TypeReq)
 
 	if err := jsonapi.UnmarshalPayload(r.Body, pl); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		jsonapi.MarshalErrors(w, []*jsonapi.ErrorObject{{
+			Title:  "Internal Error",
+			Detail: err.Error(),
+			Status: "500",
+		}})
 		return
 	}
 
 	k, ok := pl.EventData["key"]
 	if !ok {
-		w.Header().Set("Content-Type", jsonapi.MediaType)
 		jsonapi.MarshalErrors(w, []*jsonapi.ErrorObject{{
 			Title:  "Validation Error",
 			Detail: "Given request body was invalid.",
@@ -56,7 +61,6 @@ func typeHandler(w http.ResponseWriter, r *http.Request) {
 		DataType: dt,
 	}
 
-	w.Header().Set("Content-Type", jsonapi.MediaType)
 	w.WriteHeader(http.StatusOK)
 
 	if err := jsonapi.MarshalPayload(w, resp); err != nil {
