@@ -16,7 +16,7 @@ type TypeReq struct {
 }
 
 type TypeResp struct {
-	DataType string `jsonapi:"attr11,data_type"`
+	DataType string `jsonapi:"attr,data_type"`
 }
 
 func main() {
