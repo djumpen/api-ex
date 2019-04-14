@@ -32,9 +32,9 @@ func typeHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err := jsonapi.UnmarshalPayload(r.Body, pl); err != nil {
 		jsonapi.MarshalErrors(w, []*jsonapi.ErrorObject{{
-			Title:  "Internal Error",
+			Title:  "Validation Error",
 			Detail: err.Error(),
-			Status: "500",
+			Status: "400",
 		}})
 		return
 	}
